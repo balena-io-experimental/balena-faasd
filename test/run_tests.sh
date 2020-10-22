@@ -1,7 +1,7 @@
 #!/bin/bash
-IP=192.168.1.51
+IP=
 OPENFAAS_URL=http://${IP}:8080
-CALLBACK_URL=https://end4yokwq2q4p.x.pipedream.net
+CALLBACK_URL=
 PASSWORD=$1
 
 usage() {

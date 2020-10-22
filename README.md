@@ -22,9 +22,10 @@ The repo includes a simple testing script that tests all the basic `faaad` funct
 
 In order to run this tests:
 
-1. `curl -sLfS https://cli.openfaas.com | sudo sh`
+1. Install faas-cli: `curl -sLfS https://cli.openfaas.com | sudo sh`
 2. Deploy the Balena app. The password will be shown in the last line of the logs
-3. Run `test/run_tests. PASSWORD`
+3. Modify `test/run_tests.sh` to set the `IP` variable to your device IP, and `CALLBACK_URL` to the endpoint that should be called by the async function
+4. Run `test/run_tests.sh PASSWORD`
 
 **CAVEAT:** The script does not check the results automatically, you have to make sure all worked properly
 
