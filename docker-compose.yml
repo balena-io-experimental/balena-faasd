@@ -1,0 +1,14 @@
+version: '2.1'
+services:
+  faasd:
+    build: ./faasd
+    privileged: true
+    environment:
+      - UDEV=on
+    ports:
+      - 8080:8080
+    volumes:
+      - containerd_data:/var/lib/containerd
+
+volumes:
+  containerd_data:

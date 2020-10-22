@@ -1,0 +1,70 @@
+FROM balenalib/armv7hf-debian:latest
+
+#################
+# Install Systemd
+#################
+ENV container docker
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		systemd-sysv \
+		kmod \
+	&& rm -rf /var/lib/apt/lists/*
+
+# We never want these to run in a container
+# Feel free to edit the list but this is the one we used
+RUN systemctl mask \
+    dev-hugepages.mount \
+    sys-fs-fuse-connections.mount \
+    sys-kernel-config.mount \
+
+    display-manager.service \
+    getty@.service \
+    systemd-logind.service \
+    systemd-remount-fs.service \
+
+    getty.target \
+    graphical.target
+
+COPY systemd/entry.sh /usr/bin/entry.sh
+COPY systemd/balena.service /etc/systemd/system/balena.service
+
+RUN systemctl enable /etc/systemd/system/balena.service
+
+STOPSIGNAL 37
+ENTRYPOINT ["/usr/bin/entry.sh"]
+ENV INITSYSTEM on
+######################
+# Finish setup systemd
+######################
+
+
+RUN sudo apt update \
+    && sudo apt install -qy \
+        runc \
+        bridge-utils \
+        tmux \
+        vim \
+        iptables \
+        git
+
+
+# Install containerd and configure to start on boot
+RUN curl -sSL https://github.com/alexellis/containerd-armhf/releases/download/v1.3.5/containerd-1.3.5-linux-armhf.tar.gz | sudo tar -xvz --strip-components=1 -C /usr/local/bin/
+RUN curl -SLfs https://raw.githubusercontent.com/containerd/containerd/v1.3.5/containerd.service | sudo tee /etc/systemd/system/containerd.service && \
+    systemctl enable containerd
+
+# Install CNI plugins
+RUN mkdir -p /opt/cni/bin && curl -sSL https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni-plugins-linux-arm-v0.8.5.tgz | sudo tar -xz -C /opt/cni/bin
+
+
+# Install faasd
+RUN curl -sSLf "https://github.com/openfaas/faasd/releases/download/0.9.5/faasd-armhf" \
+        --output "/usr/local/bin/faasd" \
+    && chmod a+x "/usr/local/bin/faasd" \
+    && export GO_HOME=$HOME/go/ \ 
+    && mkdir -p $GOPATH/src/github.com/openfaas \
+    && cd $GOPATH/src/github.com/openfaas \
+    && git clone https://github.com/openfaas/faasd --depth=1 \
+    && cd  faasd
+
+COPY entry.sh .
+CMD ["bash", "entry.sh"]
