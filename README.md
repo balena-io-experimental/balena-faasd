@@ -5,7 +5,7 @@ This repo contains the Balenified [faasd](https://github.com/openfaas/faasd) app
 
 **Limitations**
 
-* The current version uses a containerized `containerd` daemon. A version that uses the engine containerd daemon is in progress
+* The current version uses a containerized `containerd` daemon. A version that uses [balena-engine](https://github.com/balena-os/balena-engine) is in progress.
 * Only works on balenaOs Rpi4 64biy, since it requires the `overlayfs` module and we only include it that version
 
 
