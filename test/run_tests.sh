@@ -5,7 +5,7 @@ CALLBACK_URL=
 PASSWORD=$1
 
 usage() {
-    echo "Usage: test_all.sh PASSWORD"
+    echo "Usage: run_tests.sh PASSWORD"
 }
 
 
